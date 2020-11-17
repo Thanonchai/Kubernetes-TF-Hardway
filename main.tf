@@ -55,3 +55,26 @@ resource "azurerm_network_security_rule" "nsg-allow-api-server" {
   network_security_group_name = azurerm_network_security_group.nsg.name
 }
 
+resource "azurerm_public_ip" "pip" {
+  name = "kubernetes-pip"
+  resource_group_name = azurerm_resource_group.k8s.name
+  location = azurerm_resource_group.k8s.location
+  allocation_method = "Static"
+}
+
+resource "azurerm_lb_backend_address_pool" "lb-pool" {
+  name = "kubernetes-lb-pool"
+  resource_group_name = azurerm_resource_group.k8s.name
+  loadbalancer_id = azurerm_lb.lb.id
+}
+
+resource "azurerm_lb" "lb" {
+  name = "kubernetes-lb"
+  resource_group_name = azurerm_resource_group.k8s.name
+  location = azurerm_resource_group.k8s.location
+  
+  frontend_ip_configuration {
+    name = "pip"
+    public_ip_address_id = azurerm_public_ip.pip.id
+  }
+}
