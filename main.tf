@@ -93,31 +93,11 @@ module controller {
   image_id = var.image_id
 }
 
-//resource "azurerm_availability_set" "controller-as" {
-//  name = "controller-as"
-//  resource_group_name = module.resource_group.name
-//  location = module.resource_group.location
-//}
-//
-//resource "azurerm_public_ip" "controller-pip" {
-//  count = 2
-//  name = join("-", ["controller", count.index, "pip"])
-//  resource_group_name = module.resource_group.name
-//  location = module.resource_group.location
-//  allocation_method = "Dynamic"
-//}
-//
-//resource "azurerm_network_interface" "nic" {
-//  count = 2
-//  name = join("-", ["worker", count.index, "nic"])
-//  resource_group_name = module.resource_group.name
-//  location = module.resource_group.location
-//  ip_configuration {
-//    name = "worker"
-//    private_ip_address_allocation = "Static"
-//    private_ip_address = "10.240.0.2${count.index}"
-//    public_ip_address_id = azurerm_public_ip.controller-pip[count.index].ip_address
-//    subnet_id = azurerm_subnet.k8s-subnet.id
-//  }
-//  
-//}
+module worker {
+  source = "./modules/worker"
+  rg_name = module.resource_group.name
+  location = module.resource_group.location
+  subnet_id = azurerm_subnet.k8s-subnet.id
+  image_id = var.image_id
+}
+
